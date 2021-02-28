@@ -35,6 +35,32 @@ print(salesByStore)
 #TODO: use pivot or melt feature to create a report that inserts subtotal lines by store by year.
 '''
 
+def investigate_data(df):
+    # look at shape
+    print("Data Shape:")
+    print(df.shape)
+    print()
+
+    # look at data columns and data types
+    print("Column Details:")
+    print(df.dtypes)
+    print()
+
+    # look at general statistics
+    print("Data Statistics:")
+    print(df.describe())
+    print()
+
+    # check for missing values
+    print("Missing Values Check:")
+    print(df.isna().sum())
+    print()
+
+    # check for outliers - greater than 2 standard deviations from mean
+    print("Outlier Check:")
+    print((df > (df.mean() + (2 * df.std()))).sum())
+    print()
+
 def main():
 
     # load data
@@ -46,6 +72,23 @@ def main():
     df_sales_final_2016 = pd.read_csv("Datasets\\SalesFINAL12312016.csv")
 
     # clean data - address missing values, outliers, unrealistic values, ...
+    print("Investigate 2017 Purchase Prices Dataset " + ("*" * 60))
+    investigate_data(df_2017_purchase_prices)
+
+    print("Investigate Beginning Inventory Final 2016 Dataset " + ("*" * 60))
+    investigate_data(df_beg_inv_final_2016)
+
+    print("Investigate Ending Inventory Final 2016 Dataset " + ("*" * 60))
+    investigate_data(df_end_inv_final_2016)
+
+    print("Investigate Invoice Purchases 2016 Dataset " + ("*" * 60))
+    investigate_data(df_invoice_purchases_2016)
+
+    print("Investigate Purchases Final 2016 Dataset " + ("*" * 60))
+    investigate_data(df_purchases_final_2016)
+
+    print("Investigate Sales Final 2016 Dataset " + ("*" * 60))
+    investigate_data(df_sales_final_2016)
 
     # prep/transform data for analysis - create new dfs, add colums to existing dfs, ...
 
