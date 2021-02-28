@@ -38,12 +38,12 @@ print(salesByStore)
 def main():
 
     # load data
-    df_2017_purchase_prices_0 = pd.read_csv("Datasets\\2017PurchasePricesDec.csv")
-    df_beg_inv_final_2016_0 = pd.read_csv("Datasets\\BegInvFINAL12312016.csv")
-    df_end_inv_final_2016_0 = pd.read_csv("Datasets\\EndInvFINAL12312016.csv")
-    df_invoice_purchases_2016_0 = pd.read_csv("Datasets\\InvoicePurchases12312016.csv")
-    df_purchases_final_2016_0 = pd.read_csv("Datasets\\PurchasesFINAL12312016.csv")
-    df_sales_final_2016_0 = pd.read_csv("Datasets\\SalesFINAL12312016.csv")
+    df_2017_purchase_prices = pd.read_csv("Datasets\\2017PurchasePricesDec.csv")
+    df_beg_inv_final_2016 = pd.read_csv("Datasets\\BegInvFINAL12312016.csv")
+    df_end_inv_final_2016 = pd.read_csv("Datasets\\EndInvFINAL12312016.csv")
+    df_invoice_purchases_2016 = pd.read_csv("Datasets\\InvoicePurchases12312016.csv")
+    df_purchases_final_2016 = pd.read_csv("Datasets\\PurchasesFINAL12312016.csv")
+    df_sales_final_2016 = pd.read_csv("Datasets\\SalesFINAL12312016.csv")
 
     # clean data - address missing values, outliers, unrealistic values, ...
 
