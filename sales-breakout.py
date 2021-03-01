@@ -56,10 +56,12 @@ def investigate_data(df):
     print(df.isna().sum())
     print()
 
+    '''
     # check for outliers - greater than 2 standard deviations from mean
     print("Outlier Check:")
-    print((df > (df.mean() + (2 * df.std()))).sum())
+    print(((df > (df.mean() + (2 * df.std()))) | (df < (df.mean() - (2 * df.std())))).sum())
     print()
+    '''
 
 def main():
 
@@ -71,7 +73,7 @@ def main():
     df_purchases_final_2016 = pd.read_csv("Datasets\\PurchasesFINAL12312016.csv")
     df_sales_final_2016 = pd.read_csv("Datasets\\SalesFINAL12312016.csv")
 
-    # clean data - address missing values, outliers, unrealistic values, ...
+    # investigate data
     print("Investigate 2017 Purchase Prices Dataset " + ("*" * 60))
     investigate_data(df_2017_purchase_prices)
 
@@ -90,7 +92,9 @@ def main():
     print("Investigate Sales Final 2016 Dataset " + ("*" * 60))
     investigate_data(df_sales_final_2016)
 
-    # prep/transform data for analysis - create new dfs, add colums to existing dfs, ...
+    # clean data - address missing values, outliers, unrealistic values, ...
+
+    # prep/transform data for analysis - create new dfs, add columns to existing dfs, ...
 
 
 if __name__ == '__main__':
