@@ -58,10 +58,17 @@ def investigate_data(df):
 
     '''
     # check for outliers - greater than 2 standard deviations from mean
-    print("Outlier Check:")
-    print(((df > (df.mean() + (2 * df.std()))) | (df < (df.mean() - (2 * df.std())))).sum())
+    print("Outliers Below Mean:")
+    print((df < (df.mean() - (2 * df.std()))).sum())
+    print("Outliers Above Mean:")
+    print((df > (df.mean() + (2 * df.std()))).sum())
     print()
     '''
+
+'''
+def clean_2017_purchase_prices(df):
+    # address missing values
+'''
 
 def main():
 
@@ -93,6 +100,7 @@ def main():
     investigate_data(df_sales_final_2016)
 
     # clean data - address missing values, outliers, unrealistic values, ...
+    #clean_2017_purchase_prices(df_2017_purchase_prices)
 
     # prep/transform data for analysis - create new dfs, add columns to existing dfs, ...
 
