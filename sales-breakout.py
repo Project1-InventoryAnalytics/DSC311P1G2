@@ -37,7 +37,9 @@ print(salesByStore)
 #TODO: use pivot or melt feature to create a report that inserts subtotal lines by store by year.
 '''
 
+
 def investigate_data(df):
+    '''
     # look at shape
     print("Data Shape:")
     print(df.shape)
@@ -57,21 +59,35 @@ def investigate_data(df):
     print("Missing Values Check:")
     print(df.isna().sum())
     print()
-
-    # check for outliers - greater than 2 standard deviations from mean
-    print("Outliers Below Mean:")
-    print((df < (df.mean() - (2 * df.std()))).sum())
-    print("Outliers Above Mean:")
-    print((df > (df.mean() + (2 * df.std()))).sum())
-    print()
-
+    '''
 
 def clean_2017_purchase_prices(df):
+    # investigate dataset
+    investigate_data(df)
+
     # address missing values
     df_missing = df[df.isna().any(axis=1)]
+    print("Missing Values:")
     print(df_missing.head())
+    print()
     # based on the lack of identifying information for the product, remove this row
     df_cleaned = df.dropna()
+
+    # check for outliers using histogram for Price, Volume, PurchasePrice
+    plt.hist(df_cleaned["Price"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("2017 Purchase Prices - Price")
+    plt.show()
+
+    plt.hist(df_cleaned["Volume"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("2017 Purchase Prices - Volume")
+    plt.show()
+
+    plt.hist(df_cleaned["PurchasePrice"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("2017 Purchase Prices - PurchasePrice")
+    plt.show()
 
     # address outliers
     df_outliers = df_cleaned[(df_cleaned["Price"] > (df_cleaned["Price"].mean() + (2 * df_cleaned["Price"].std()))) |
@@ -81,7 +97,62 @@ def clean_2017_purchase_prices(df):
 
     return df_cleaned
 
-def clean_invoice_purchases(df):
+
+def clean_beg_inv_final_2016(df):
+    # investigate dataset
+    investigate_data(df)
+    '''
+    # check for outliers - greater than 2 standard deviations from mean - for numerical values only
+    print("Outliers Below Mean:")
+    print((df[["onHand", "Price"]] < (df.mean() - (2 * df.std()))).sum())
+    print("Outliers Above Mean:")
+    print((df[["onHand", "Price"]] > (df.mean() + (2 * df.std()))).sum())
+    print()
+    '''
+    return df
+
+
+def clean_end_inv_final_2016(df):
+    # investigate dataset
+    investigate_data(df)
+    '''
+    # check for outliers - greater than 2 standard deviations from mean - for numerical values only
+    print("Outliers Below Mean:")
+    print((df[["onHand", "Price"]] < (df.mean() - (2 * df.std()))).sum())
+    print("Outliers Above Mean:")
+    print((df[["onHand", "Price"]] > (df.mean() + (2 * df.std()))).sum())
+    print()
+    '''
+    return df
+
+
+def clean_invoice_purchases_2016(df):
+    # investigate dataset
+    investigate_data(df)
+
+    # check for outliers using histogram for Quantity, Dollars, Freight
+    plt.hist(df["Quantity"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("Invoice Purchases 2016 - Quantity")
+    plt.show()
+
+    plt.hist(df["Dollars"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("Invoice Purchases 2016 - Dollars")
+    plt.show()
+
+    plt.hist(df["Freight"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("Invoice Purchases 2016 - Freight")
+    plt.show()
+    '''
+    # check for outliers - greater than 2 standard deviations from mean - for numerical values only
+    print("Outliers Below Mean:")
+    print((df[["Quantity", "Dollars", "Freight"]] < (df.mean() - (2 * df.std()))).sum())
+    print("Outliers Above Mean:")
+    print((df[["Quantity", "Dollars", "Freight"]] > (df.mean() + (2 * df.std()))).sum())
+    print()
+    '''
     # address outliers
     df_outliers = df[(df["Dollars"] > (df["Dollars"].mean() + (2 * df["Dollars"].std()))) |
         (df["Freight"] > (df["Freight"].mean() + (2 * df["Freight"].std()))) |
@@ -89,17 +160,91 @@ def clean_invoice_purchases(df):
     df_outliers.to_csv("Output\\Outliers_InvoicePurchases12312016.csv")
     # based on reviewing this list the data seems plausible, so outliers to remain
 
+    return df
+
+
 def clean_purchases_final_2016(df):
+    # investigate dataset
+    investigate_data(df)
+
     # address missing values
     df_missing = df[df.isna().any(axis=1)]
+    print("Missing Values:")
     print(df_missing.head())
+    print()
     # reviewing product description and purchase price in 2017PurchasePricesDec.csv, all missing are 750mL
     df_cleaned = df.copy(deep=True)
     df_cleaned.fillna("750mL", inplace=True)
+    '''
+    # check for outliers using histogram for PurchasePrice, Quantity, Dollars
+    plt.hist(df["PurchasePrice"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("Purchases Final 2016 - PurchasePrice")
+    plt.show()
 
+    plt.hist(df["Quantity"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("Purchases Final 2016 - Quantity")
+    plt.show()
+
+    plt.hist(df["Dollars"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("Purchases Final 2016 - Dollars")
+    plt.show()
+    '''
+    '''
+    # check for outliers - greater than 2 standard deviations from mean - for numerical values only
+    print("Outliers Below Mean:")
+    print((df[["PurchasePrice", "Quantity", "Dollars"]] < (df.mean() - (2 * df.std()))).sum())
+    print("Outliers Above Mean:")
+    print((df[["PurchasePrice", "Quantity", "Dollars"]] > (df.mean() + (2 * df.std()))).sum())
+    print()
+    '''
     return df_cleaned
 
-def prep_2017_purchase_prices(df):
+
+def clean_sales_final_2016(df):
+    # investigate dataset
+    investigate_data(df)
+    '''
+    # check for outliers using histogram for SalesQuantity, SalesDollars, SalesPrice, Volume, ExciseTax
+    plt.hist(df["SalesQuantity"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("Sales Final 2016 - SalesQuantity")
+    plt.show()
+
+    plt.hist(df["SalesDollars"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("Sales Final 2016 - SalesDollars")
+    plt.show()
+
+    plt.hist(df["SalesPrice"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("Sales Final 2016 - SalesPrice")
+    plt.show()
+
+    plt.hist(df["Volume"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("Sales Final 2016 - Volume")
+    plt.show()
+
+    plt.hist(df["ExciseTax"], bins=100)
+    plt.ylabel("Counts")
+    plt.xlabel("Sales Final 2016 - ExciseTax")
+    plt.show()
+    '''
+    '''
+    # check for outliers - greater than 2 standard deviations from mean - for numerical values only
+    print("Outliers Below Mean:")
+    print((df[["SalesQuantity", "SalesDollars", "SalesPrice", "Volume", "ExciseTax"]] < (df.mean() - (2 * df.std()))).sum())
+    print("Outliers Above Mean:")
+    print((df[["SalesQuantity", "SalesDollars", "SalesPrice", "Volume", "ExciseTax"]] > (df.mean() + (2 * df.std()))).sum())
+    print()
+    '''
+    return df
+
+
+def prep_2017_purchase_prices_with_profit(df):
     # add columns for profit (price-purchasePrice) and profit margin (profit/price)
     df_prepped = df.copy(deep=True)
     df_prepped["Profit"] = (df_prepped["Price"] - df_prepped["PurchasePrice"])
@@ -107,7 +252,8 @@ def prep_2017_purchase_prices(df):
 
     return df_prepped
 
-def prep_invoice_purchases_2016(df):
+
+def prep_invoice_purchases_2016_by_month(df):
     # add columns for year and month
     df_prepped = df.copy(deep=True)
     df_prepped["Purchase_Paid_Year"] = pd.DatetimeIndex(df_prepped["PayDate"]).year
@@ -115,57 +261,93 @@ def prep_invoice_purchases_2016(df):
 
     return df_prepped
 
-def prep_purchases_final_2016_by_store(df):
+
+def prep_purchases_final_2016_by_store_by_month(df):
     # add columns for year and month
     df_prepped = df.copy(deep=True)
     df_prepped["Purchase_Paid_Year"] = pd.DatetimeIndex(df_prepped["PayDate"]).year
     df_prepped["Purchase_Paid_Month"] = pd.DatetimeIndex(df_prepped["PayDate"]).month
 
-    # add column with store name parsed from InventoryID
+    # add column with store name parsed from InventoryId
     df_prepped["Store_Name"] = df_prepped["InventoryId"].str.extract(r'_([^_]+)_', expand=True)
 
-    df_prepped_by_store = df_prepped.groupby(["Store", "Store_Name", "Purchase_Paid_Year", "Purchase_Paid_Month"]).aggregate({"Dollars": ["sum", "mean"]})
+    df_prepped_by_store = df_prepped.groupby(["Store", "Store_Name", "Purchase_Paid_Year", "Purchase_Paid_Month"]).aggregate(
+        {"Dollars": ["sum", "mean"]})
+
+    #df_prepped_by_store.columns = ["Store", "Store_Name", "Purchase_Paid_Year", "Purchase_Paid_Month", "Dollars_Sum", "Dollars_Mean"]
 
     return df_prepped_by_store
+
+
+def prep_sales_final_2016_by_store_by_month(df):
+    # add columns for year and month
+    df_prepped = df.copy(deep=True)
+    df_prepped["Sales_Year"] = pd.DatetimeIndex(df_prepped["SalesDate"]).year
+    df_prepped["Sales_Month"] = pd.DatetimeIndex(df_prepped["SalesDate"]).month
+
+    # add column with store name parsed from InventoryId
+    df_prepped["Store_Name"] = df_prepped["InventoryId"].str.extract(r'_([^_]+)_', expand=True)
+
+    df_prepped_by_store = df_prepped.groupby(["Store", "Store_Name", "Sales_Year", "Sales_Month"]).aggregate(
+        {"SalesDollars": ["sum", "mean"]})
+
+    #df_prepped_by_store.columns = ["Store", "Store_Name", "Sales_Year", "Sales_Month", "SalesDollars_Sum", "SalesDollars_Mean"]
+
+    return df_prepped_by_store
+
+
+def prep_earnings_by_store_by_month(df_purchases, df_sales):
+    # full join df_purchases and df_sales
+    print(df_purchases.head())
+    print(df_sales.head())
+    df_earnings = pd.merge(df_purchases, df_sales, how="outer", left_on=["Store", "Purchase_Paid_Year", "Purchase_Paid_Month"],
+                           right_on=["Store", "Sales_Year", "Sales_Month"])
+
+    print(df_earnings.head(20))
+
+    return df_earnings
+
 
 def main():
 
     # load data
-    df_2017_purchase_prices = pd.read_csv("Datasets\\2017PurchasePricesDec.csv")
-    df_beg_inv_final_2016 = pd.read_csv("Datasets\\BegInvFINAL12312016.csv")
-    df_end_inv_final_2016 = pd.read_csv("Datasets\\EndInvFINAL12312016.csv")
-    df_invoice_purchases_2016 = pd.read_csv("Datasets\\InvoicePurchases12312016.csv")
+    #df_2017_purchase_prices = pd.read_csv("Datasets\\2017PurchasePricesDec.csv")
+    #df_beg_inv_final_2016 = pd.read_csv("Datasets\\BegInvFINAL12312016.csv")
+    #df_end_inv_final_2016 = pd.read_csv("Datasets\\EndInvFINAL12312016.csv")
+    #df_invoice_purchases_2016 = pd.read_csv("Datasets\\InvoicePurchases12312016.csv")
     df_purchases_final_2016 = pd.read_csv("Datasets\\PurchasesFINAL12312016.csv")
     df_sales_final_2016 = pd.read_csv("Datasets\\SalesFINAL12312016.csv")
-    '''
-    # investigate data
-    print("Investigate 2017 Purchase Prices Dataset " + ("*" * 60))
-    investigate_data(df_2017_purchase_prices)
-    
-    print("Investigate Beginning Inventory Final 2016 Dataset " + ("*" * 60))
-    investigate_data(df_beg_inv_final_2016)
 
-    print("Investigate Ending Inventory Final 2016 Dataset " + ("*" * 60))
-    investigate_data(df_end_inv_final_2016)
+    # investigate data and clean data
+    print("Investigate and Clean 2017 Purchase Prices Dataset " + ("*" * 60))
+    #df_2017_purchase_prices_cleaned = clean_2017_purchase_prices(df_2017_purchase_prices)
     
-    print("Investigate Invoice Purchases 2016 Dataset " + ("*" * 60))
-    investigate_data(df_invoice_purchases_2016)
+    print("Investigate and Clean Beginning Inventory Final 2016 Dataset " + ("*" * 60))
+    #df_beg_inv_final_2016_cleaned = clean_beg_inv_final_2016(df_beg_inv_final_2016)
+
+    print("Investigate and Clean Ending Inventory Final 2016 Dataset " + ("*" * 60))
+    #df_end_inv_final_2016_cleaned = clean_end_inv_final_2016(df_end_inv_final_2016)
     
-    print("Investigate Purchases Final 2016 Dataset " + ("*" * 60))
-    investigate_data(df_purchases_final_2016)
+    print("Investigate and Clean Invoice Purchases 2016 Dataset " + ("*" * 60))
+    #df_invoice_purchases_2016_cleaned = clean_invoice_purchases_2016(df_invoice_purchases_2016)
     
-    print("Investigate Sales Final 2016 Dataset " + ("*" * 60))
-    investigate_data(df_sales_final_2016)
-    '''
-    # clean data - address missing values, outliers, unrealistic values, ...
-    df_2017_purchase_prices_cleaned = clean_2017_purchase_prices(df_2017_purchase_prices)
-    clean_invoice_purchases(df_invoice_purchases_2016)
+    print("Investigate and Clean Purchases Final 2016 Dataset " + ("*" * 60))
     df_purchases_final_2016_cleaned = clean_purchases_final_2016(df_purchases_final_2016)
 
+    print("Investigate and Clean Sales Final 2016 Dataset " + ("*" * 60))
+    df_sales_final_2016_cleaned = clean_sales_final_2016(df_sales_final_2016)
+
     # prep/transform data for analysis - create new dfs, add columns to existing dfs, ...
-    df_2017_purchase_prices_prepped = prep_2017_purchase_prices(df_2017_purchase_prices_cleaned)
-    df_invoice_purchases_2016_prepped = prep_invoice_purchases_2016(df_invoice_purchases_2016)
-    df_purchases_final_2016_prepped_by_store = prep_purchases_final_2016_by_store(df_purchases_final_2016_cleaned)
+    #df_2017_purchase_prices_with_profit = prep_2017_purchase_prices_with_profit(df_2017_purchase_prices_cleaned)
+    #df_invoice_purchases_2016_by_month = prep_invoice_purchases_2016_by_month(df_invoice_purchases_2016_cleaned)
+    df_purchases_final_2016_by_store_by_month = prep_purchases_final_2016_by_store_by_month(df_purchases_final_2016_cleaned)
+    df_purchases_final_2016_by_store_by_month.to_csv("Output\\purchases_final_2016_by_store_by_month.csv")
+    df_sales_final_2016_by_store_by_month = prep_sales_final_2016_by_store_by_month(df_sales_final_2016_cleaned)
+    df_sales_final_2016_by_store_by_month.to_csv("Output\\sales_final_2016_by_store_by_month.csv")
+    df_earnings_by_store_by_month = prep_earnings_by_store_by_month(df_purchases_final_2016_by_store_by_month,
+                                                                    df_sales_final_2016_by_store_by_month)
+    df_earnings_by_store_by_month.to_csv("Output\\earnings_by_store_by_month.csv")
+
 
 
 if __name__ == '__main__':
