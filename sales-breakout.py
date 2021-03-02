@@ -344,9 +344,9 @@ def main():
     df_purchases_final_2016_by_store_by_month.to_csv("Output\\purchases_final_2016_by_store_by_month.csv")
     df_sales_final_2016_by_store_by_month = prep_sales_final_2016_by_store_by_month(df_sales_final_2016_cleaned)
     df_sales_final_2016_by_store_by_month.to_csv("Output\\sales_final_2016_by_store_by_month.csv")
-    df_earnings_by_store_by_month = prep_earnings_by_store_by_month(df_purchases_final_2016_by_store_by_month,
+    #df_earnings_by_store_by_month = prep_earnings_by_store_by_month(df_purchases_final_2016_by_store_by_month,
                                                                     df_sales_final_2016_by_store_by_month)
-    df_earnings_by_store_by_month.to_csv("Output\\earnings_by_store_by_month.csv")
+    #df_earnings_by_store_by_month.to_csv("Output\\earnings_by_store_by_month.csv")
 
 
 
