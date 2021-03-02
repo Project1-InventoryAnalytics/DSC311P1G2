@@ -76,7 +76,7 @@ def clean_2017_purchase_prices(df):
     # address outliers
     df_outliers = df_cleaned[(df_cleaned["Price"] > (df_cleaned["Price"].mean() + (2 * df_cleaned["Price"].std()))) |
         (df_cleaned["PurchasePrice"] > (df_cleaned["PurchasePrice"].mean() + (2 * df_cleaned["PurchasePrice"].std())))]
-    df_outliers.to_csv("Datasets\\Outliers_2017PurchasePricesDec.csv")
+    df_outliers.to_csv("Output\\Outliers_2017PurchasePricesDec.csv")
     # based on reviewing this list the data seems plausible, so outliers to remain
 
     return df_cleaned
@@ -86,7 +86,7 @@ def clean_invoice_purchases(df):
     df_outliers = df[(df["Dollars"] > (df["Dollars"].mean() + (2 * df["Dollars"].std()))) |
         (df["Freight"] > (df["Freight"].mean() + (2 * df["Freight"].std()))) |
         (df["Quantity"] > (df["Quantity"].mean() + (2 * df["Quantity"].std())))]
-    df_outliers.to_csv("Datasets\\Outliers_InvoicePurchases12312016.csv")
+    df_outliers.to_csv("Output\\Outliers_InvoicePurchases12312016.csv")
     # based on reviewing this list the data seems plausible, so outliers to remain
 
 def clean_purchases_final_2016(df):
