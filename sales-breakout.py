@@ -62,20 +62,16 @@ def investigate_data(df):
     print()
 
 
-
-
 def clean_2017_purchase_prices(df):
     # investigate dataset
     investigate_data(df)
 
     # address missing values
     df_missing = df[df.isna().any(axis=1)]
-    print("Missing Values:")
-    print(df_missing.head())
-    print()
+    df_missing.to_csv("Output\\Missing_Values_2017PurchasePricesDec.csv")
     # based on the lack of identifying information for the product, remove this row
     df_cleaned = df.dropna()
-
+    '''
     # check for outliers using histogram for Price, Volume, PurchasePrice
     plt.hist(df_cleaned["Price"], bins=100)
     plt.ylabel("Counts")
@@ -91,11 +87,11 @@ def clean_2017_purchase_prices(df):
     plt.ylabel("Counts")
     plt.xlabel("2017 Purchase Prices - PurchasePrice")
     plt.show()
-
-    # address outliers
+    '''
+    # review/address outliers - Price, PurchasePrice
     df_outliers = df_cleaned[(df_cleaned["Price"] > (df_cleaned["Price"].mean() + (2 * df_cleaned["Price"].std()))) |
-                             (df_cleaned["PurchasePrice"] > (
-                                         df_cleaned["PurchasePrice"].mean() + (2 * df_cleaned["PurchasePrice"].std())))]
+                             (df_cleaned["PurchasePrice"] > (df_cleaned["PurchasePrice"].mean() +
+                                                             (2 * df_cleaned["PurchasePrice"].std())))]
     df_outliers.to_csv("Output\\Outliers_2017PurchasePricesDec.csv")
     # based on reviewing this list the data seems plausible, so outliers to remain
 
@@ -105,7 +101,7 @@ def clean_2017_purchase_prices(df):
 def clean_beg_inv_final_2016(df):
     # investigate dataset
     investigate_data(df)
-
+    '''
     # check for outliers using histogram for onHand, Price
     plt.hist(df["onHand"], bins=100)
     plt.ylabel("Counts")
@@ -117,13 +113,11 @@ def clean_beg_inv_final_2016(df):
     plt.xlabel("Beg Inv Final 2016 - Price")
     plt.show()
     '''
-    # check for outliers - greater than 2 standard deviations from mean - for numerical values only
-    print("Outliers Below Mean:")
-    print((df[["onHand", "Price"]] < (df.mean() - (2 * df.std()))).sum())
-    print("Outliers Above Mean:")
-    print((df[["onHand", "Price"]] > (df.mean() + (2 * df.std()))).sum())
-    print()
-    '''
+    # review/address outliers - onHand, Price
+    df_outliers = df[(df["onHand"] > (df["onHand"].mean() + (2 * df["onHand"].std()))) |
+                             (df["Price"] > (df["Price"].mean() + (2 * df["Price"].std())))]
+    df_outliers.to_csv("Output\\Outliers_BegInvFINAL12312016.csv")
+
     return df
 
 
@@ -131,6 +125,10 @@ def clean_end_inv_final_2016(df):
     # investigate dataset
     investigate_data(df)
 
+    # address missing values
+    df_missing = df[df.isna().any(axis=1)]
+    df_missing.to_csv("Output\\Missing_Values_EndInvFINAL12312016.csv")
+    '''
     # check for outliers using histogram for onHand, Price
     plt.hist(df["onHand"], bins=100)
     plt.ylabel("Counts")
@@ -142,20 +140,18 @@ def clean_end_inv_final_2016(df):
     plt.xlabel("End Inv Final 2016 - Price")
     plt.show()
     '''
-    # check for outliers - greater than 2 standard deviations from mean - for numerical values only
-    print("Outliers Below Mean:")
-    print((df[["onHand", "Price"]] < (df.mean() - (2 * df.std()))).sum())
-    print("Outliers Above Mean:")
-    print((df[["onHand", "Price"]] > (df.mean() + (2 * df.std()))).sum())
-    print()
-    '''
+    # review/address outliers - onHand, Price
+    df_outliers = df[(df["onHand"] > (df["onHand"].mean() + (2 * df["onHand"].std()))) |
+                     (df["Price"] > (df["Price"].mean() + (2 * df["Price"].std())))]
+    df_outliers.to_csv("Output\\Outliers_EndInvFINAL12312016.csv")
+
     return df
 
 
 def clean_invoice_purchases_2016(df):
     # investigate dataset
     investigate_data(df)
-
+    '''
     # check for outliers using histogram for Quantity, Dollars, Freight
     plt.hist(df["Quantity"], bins=100)
     plt.ylabel("Counts")
@@ -172,14 +168,7 @@ def clean_invoice_purchases_2016(df):
     plt.xlabel("Invoice Purchases 2016 - Freight")
     plt.show()
     '''
-    # check for outliers - greater than 2 standard deviations from mean - for numerical values only
-    print("Outliers Below Mean:")
-    print((df[["Quantity", "Dollars", "Freight"]] < (df.mean() - (2 * df.std()))).sum())
-    print("Outliers Above Mean:")
-    print((df[["Quantity", "Dollars", "Freight"]] > (df.mean() + (2 * df.std()))).sum())
-    print()
-    '''
-    # address outliers
+    # review/address outliers - Dollars, Freight, Quantity
     df_outliers = df[(df["Dollars"] > (df["Dollars"].mean() + (2 * df["Dollars"].std()))) |
                      (df["Freight"] > (df["Freight"].mean() + (2 * df["Freight"].std()))) |
                      (df["Quantity"] > (df["Quantity"].mean() + (2 * df["Quantity"].std())))]
@@ -195,13 +184,11 @@ def clean_purchases_final_2016(df):
 
     # address missing values
     df_missing = df[df.isna().any(axis=1)]
-    print("Missing Values:")
-    print(df_missing.head())
-    print()
+    df_missing.to_csv("Output\\Missing_Values_PurchasesFINAL12312016.csv")
     # reviewing product description and purchase price in 2017PurchasePricesDec.csv, all missing are 750mL
     df_cleaned = df.copy(deep=True)
     df_cleaned.fillna("750mL", inplace=True)
-
+    '''
     # check for outliers using histogram for PurchasePrice, Quantity, Dollars
     plt.hist(df["PurchasePrice"], bins=100)
     plt.ylabel("Counts")
@@ -217,22 +204,22 @@ def clean_purchases_final_2016(df):
     plt.ylabel("Counts")
     plt.xlabel("Purchases Final 2016 - Dollars")
     plt.show()
+    '''
 
-    '''
-    # check for outliers - greater than 2 standard deviations from mean - for numerical values only
-    print("Outliers Below Mean:")
-    print((df[["PurchasePrice", "Quantity", "Dollars"]] < (df.mean() - (2 * df.std()))).sum())
-    print("Outliers Above Mean:")
-    print((df[["PurchasePrice", "Quantity", "Dollars"]] > (df.mean() + (2 * df.std()))).sum())
-    print()
-    '''
+    # review/address outliers - PurchasePrice, Quantity, Dollars
+    df_outliers = df_cleaned[(df_cleaned["PurchasePrice"] > (df_cleaned["PurchasePrice"].mean() +
+                                                             (2 * df_cleaned["PurchasePrice"].std()))) |
+                     (df_cleaned["Quantity"] > (df_cleaned["Quantity"].mean() + (2 * df_cleaned["Quantity"].std()))) |
+                     (df_cleaned["Dollars"] > (df_cleaned["Dollars"].mean() + (2 * df_cleaned["Dollars"].std())))]
+    df_outliers.to_csv("Output\\Outliers_PurchasesFINAL12312016.csv")
+
     return df_cleaned
 
 
 def clean_sales_final_2016(df):
     # investigate dataset
     investigate_data(df)
-
+    '''
     # check for outliers using histogram for SalesQuantity, SalesDollars, SalesPrice, Volume, ExciseTax
     plt.hist(df["SalesQuantity"], bins=100)
     plt.ylabel("Counts")
@@ -258,15 +245,16 @@ def clean_sales_final_2016(df):
     plt.ylabel("Counts")
     plt.xlabel("Sales Final 2016 - ExciseTax")
     plt.show()
-    
     '''
-    # check for outliers - greater than 2 standard deviations from mean - for numerical values only
-    print("Outliers Below Mean:")
-    print((df[["SalesQuantity", "SalesDollars", "SalesPrice", "Volume", "ExciseTax"]] < (df.mean() - (2 * df.std()))).sum())
-    print("Outliers Above Mean:")
-    print((df[["SalesQuantity", "SalesDollars", "SalesPrice", "Volume", "ExciseTax"]] > (df.mean() + (2 * df.std()))).sum())
-    print()
-    '''
+
+    # review/address outliers - SalesQuantity, SalesDollars, SalesPrice, Volume, ExciseTax
+    df_outliers = df[(df["SalesQuantity"] > (df["SalesQuantity"].mean() + (2 * df["SalesQuantity"].std()))) |
+                             (df["SalesDollars"] > (df["SalesDollars"].mean() + (2 * df["SalesDollars"].std()))) |
+                             (df["SalesPrice"] > (df["SalesPrice"].mean() + (2 * df["SalesPrice"].std()))) |
+                             (df["Volume"] > (df["Volume"].mean() + (2 * df["Volume"].std()))) |
+                             (df["ExciseTax"] > (df["ExciseTax"].mean() + (2 * df["ExciseTax"].std())))]
+    df_outliers.to_csv("Output\\Outliers_SalesFINAL12312016.csv")
+
     return df
 
 
