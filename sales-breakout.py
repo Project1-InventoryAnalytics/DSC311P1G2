@@ -133,17 +133,15 @@ def clean_end_inv_final_2016(df):
     # investigate dataset
     investigate_data(df)
 
-
-
     # check for outliers using histogram for onHand, Price
     plt.hist(df["onHand"], bins=100)
     plt.ylabel("Counts")
-    plt.xlabel("End Inv Final 2016 - onHand")
+    plt.xlabel("Beg Inv Final 2016 - onHand")
     plt.show()
 
     plt.hist(df["Price"], bins=100)
     plt.ylabel("Counts")
-    plt.xlabel("End Inv Final 2016 - Price")
+    plt.xlabel("Beg Inv Final 2016 - Price")
     plt.show()
 
     # review/address outliers - onHand, Price
@@ -151,7 +149,29 @@ def clean_end_inv_final_2016(df):
                      (df["Price"] > (df["Price"].mean() + (2 * df["Price"].std())))]
     df_outliers.to_csv("Output\\Outliers_EndInvFINAL12312016.csv")
 
-    return df
+    # Data Shape: (224489, 9)
+    # ['InventoryId', 'Store', 'City', 'Brand', 'Description', 'Size', 'onHand', 'Price', 'endDate']
+
+    # drop column 'InventoryId' is highly correlated
+    # all information from this column is represented in the columns 'Store', 'City', 'Brand'
+    df.drop(axis=1, columns='InventoryId', inplace=True)
+
+    # Missing Values Check: City    1284
+    # address missing values
+    df_missing = df[df.isna().any(axis=1)]
+    print('Missing Values:')
+    print(df_missing.head())
+    print()
+    print('\n\nEnding Inventory:\nThe total onHand count of the instances with missing values is {:,}'.format(
+        df_missing['onHand'].sum()))
+    # The total onHand count of the instances with missing values is 0
+    # based on the lack of inventory for these instances, removed rows NaN in 'City'
+    df_cleaned = df.dropna()
+    print('\nData Shape:')
+    print(df_cleaned.shape)
+    # Data Shape: (223205, 8)
+
+    return df_cleaned
 
 
 def clean_invoice_purchases_2016(df):
