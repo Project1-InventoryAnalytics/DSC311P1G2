@@ -125,12 +125,7 @@ def clean_end_inv_final_2016(df):
     # investigate dataset
     investigate_data(df)
 
-    # address missing values
-    df_missing = df[df.isna().any(axis=1)]
-    df_missing.to_csv("Output\\Missing_Values_EndInvFINAL12312016.csv")
-    # reviewing missing values, all missing are in city column for store 46 Tywardreath
-    df_cleaned = df.copy(deep=True)
-    df_cleaned.fillna("TYWARDREATH", inplace=True)
+
 
     # check for outliers using histogram for onHand, Price
     plt.hist(df["onHand"], bins=100)
