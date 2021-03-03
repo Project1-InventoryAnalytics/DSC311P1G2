@@ -397,6 +397,33 @@ def prep_sales_final_2016_by_store_by_classification_by_description_by_month(df)
 
     return df_prepped_by_store_by_classification_by_description
 
+def prep_2016_beg_inv_by_store_value(df):
+    df_prepped = df.copy(deep=True)
+
+    # create column to store value of inventory onHand
+    df_prepped['InvValue'] = df_prepped['onHand'] * df_prepped['Price']
+
+    # groupby 'Store' and 'City' to calculate totals by store
+    byStore = df_prepped.groupby(by=['Store', 'City'], as_index=False, sort=True)
+
+    print('\n\nThe value of the total inventory at the start of 2016 is {:,}'.format(df_prepped['InvValue'].sum()))
+    print('Value of inventory by store:\n')
+    inventoryB_valueByStore_subtotals = byStore['InvValue'].sum()
+
+    return inventoryB_valueByStore_subtotals
+
+def prep_2016_beg_inv_by_store_count(df):
+    df_prepped = df.copy(deep=True)
+
+    # groupby 'Store' and 'City' to calculate totals by store
+    byStore = df_prepped.groupby(by=['Store', 'City'], as_index=False, sort=True)
+
+    print('\n\nThe count of the total inventory at the start of 2016 is {:,}'.format(df_prepped['onHand'].sum()))
+    print('Inventory count by store:\n')
+    inventoryB_countByStore_subtotals = byStore['onHand'].sum()
+
+    return inventoryB_countByStore_subtotals
+
 
 def main():
     # load data
@@ -458,6 +485,11 @@ def main():
         df_sales_final_2016_cleaned)
     df_sales_final_2016_by_store_by_classification_by_description_by_month.to_csv(
         "Output\\sales_final_2016_by_store_by_classification_by_description_by_month.csv")
+
+    df_2016_beg_inv_by_store_asValue = prep_2016_beg_inv_by_store_value(df_beg_inv_final_2016_cleaned)
+    df_2016_beg_inv_by_store_asValue.to_csv("Output\\final_2016_beg_inventory_by_store_asValue.csv")
+    df_2016_beg_inv_by_store_asCount = prep_2016_beg_inv_by_store_count(df_beg_inv_final_2016_cleaned)
+    df_2016_beg_inv_by_store_asCount.to_csv("Output\\final_2016_beg_inventory_by_store_asCount.csv")
 
 
 if __name__ == '__main__':
