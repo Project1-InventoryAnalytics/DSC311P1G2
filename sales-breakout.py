@@ -1,43 +1,26 @@
+'''
+DSC 311 Project 1
+Group 2:
+Jessica Lester
+Procter Mercer
+Tami Farber
+
+Stage one of Spring 2021 DSC 311 project
+Clean and prepare for analysis related sales, inventory,
+and purchasing files for fictional client Bibitor LLC
+
+'''
 # import relevant modules
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sb
 from sklearn import preprocessing as pp
-from sklearn.preprocessing import LabelEncoder
-
-le = LabelEncoder()
 
 desired_width = 600
 pd.set_option('display.width', desired_width)
 pd.set_option('display.max_columns', 20)
 pd.set_option('display.max_rows', 300)
-
-'''
-Data_Dir = "F:/NKU-DSC311 project files/"
-filename = "SalesFINAL12312016.csv"
-df = pd.read_csv(f"{Data_Dir}{filename}")
-print(df.shape)
-#print(type(df))
-list_col = list(df.columns)
-print(list_col)
-#print(df.head())
-
-#add columns for month and year to original data frame
-df['sls_year'] = pd.DatetimeIndex(df['SalesDate']).year
-df['sls_month'] = pd.DatetimeIndex(df['SalesDate']).month
-
-#add columns with Store Name parsed from 'InventoryId' string
-df['str_name'] = df.InventoryId.str.extract(r'_([^_]+)_', expand=True)
-
-
-salesByStore = df.groupby(['Store','str_name','sls_year','sls_month']).agg({'SalesDollars':['sum','mean']}).reset_index()
-salesByStore.to_csv('TotalSalesByStore.csv')
-
-print(salesByStore)
-#TODO: use pivot or melt feature to create a report that inserts subtotal lines by store by year.
-'''
-
 
 def investigate_data(df):
 
@@ -97,10 +80,19 @@ def clean_2017_purchase_prices(df):
 
     return df_cleaned
 
+def createStoreList(df):
+    # function is used by inventory methods
+    # to create a uniform list of stores included
+    storeList = df.groupby(by=['Store', 'City'], as_index=False, sort=True)
+    print(storeList)
+
+    return storeList
+
 
 def clean_beg_inv_final_2016(df):
     # investigate dataset
     investigate_data(df)
+    # Data Shape: (206529, 9)
 
     # check for outliers using histogram for onHand, Price
     plt.hist(df["onHand"], bins=100)
@@ -165,11 +157,11 @@ def clean_end_inv_final_2016(df):
     print('\n\nEnding Inventory:\nThe total onHand count of the instances with missing values is {:,}'.format(
         df_missing['onHand'].sum()))
     # The total onHand count of the instances with missing values is 0
-    # based on the lack of inventory for these instances, removed rows NaN in 'City'
-    df_cleaned = df.dropna()
-    print('\nData Shape:')
-    print(df_cleaned.shape)
-    # Data Shape: (223205, 8)
+    # despite the lack of inventory for these instances, removed rows NaN in 'City'
+    df_cleaned = df.copy(deep=True)
+    df_cleaned.fillna("TYWARDREATH", inplace=True)
+
+
 
     return df_cleaned
 
@@ -404,7 +396,7 @@ def prep_2016_beg_inv_by_store_value(df):
     df_prepped['InvValue'] = df_prepped['onHand'] * df_prepped['Price']
 
     # groupby 'Store' and 'City' to calculate totals by store
-    byStore = df_prepped.groupby(by=['Store', 'City'], as_index=False, sort=True)
+    byStore = createStoreList(df_prepped)
 
     print('\n\nThe value of the total inventory at the start of 2016 is {:,}'.format(df_prepped['InvValue'].sum()))
     print('Value of inventory by store:\n')
@@ -416,7 +408,7 @@ def prep_2016_beg_inv_by_store_count(df):
     df_prepped = df.copy(deep=True)
 
     # groupby 'Store' and 'City' to calculate totals by store
-    byStore = df_prepped.groupby(by=['Store', 'City'], as_index=False, sort=True)
+    byStore = createStoreList(df_prepped)
 
     print('\n\nThe count of the total inventory at the start of 2016 is {:,}'.format(df_prepped['onHand'].sum()))
     print('Inventory count by store:\n')
@@ -431,7 +423,7 @@ def prep_2016_end_inv_by_store_value(df):
     df_prepped['InvValue'] = df_prepped['onHand'] * df_prepped['Price']
 
     # groupby 'Store' and 'City' to calculate totals by store
-    byStore = df_prepped.groupby(by=['Store', 'City'], as_index=False, sort=True)
+    byStore = createStoreList(df_prepped)
 
     print('\n\nThe value of the total inventory at the end of 2016 is {:,}'.format(df_prepped['InvValue'].sum()))
     print('Value of inventory by store:\n')
@@ -443,7 +435,7 @@ def prep_2016_end_inv_by_store_count(df):
     df_prepped = df.copy(deep=True)
 
     # groupby 'Store' and 'City' to calculate totals by store
-    byStore = df_prepped.groupby(by=['Store', 'City'], as_index=False, sort=True)
+    byStore = createStoreList(df_prepped)
 
     print('\n\nThe count of the total inventory at the end of 2016 is {:,}'.format(df_prepped['onHand'].sum()))
     print('Inventory count by store:\n')
@@ -461,15 +453,18 @@ def main():
     df_purchases_final_2016 = pd.read_csv("Datasets\\PurchasesFINAL12312016.csv")
     df_sales_final_2016 = pd.read_csv("Datasets\\SalesFINAL12312016.csv")
 
+
     # investigate data and clean data
     print("Investigate and Clean 2017 Purchase Prices Dataset " + ("*" * 60))
     df_2017_purchase_prices_cleaned = clean_2017_purchase_prices(df_2017_purchase_prices)
+
 
     print("Investigate and Clean Beginning Inventory Final 2016 Dataset " + ("*" * 60))
     df_beg_inv_final_2016_cleaned = clean_beg_inv_final_2016(df_beg_inv_final_2016)
 
     print("Investigate and Clean Ending Inventory Final 2016 Dataset " + ("*" * 60))
     df_end_inv_final_2016_cleaned = clean_end_inv_final_2016(df_end_inv_final_2016)
+
 
     print("Investigate and Clean Invoice Purchases 2016 Dataset " + ("*" * 60))
     df_invoice_purchases_2016_cleaned = clean_invoice_purchases_2016(df_invoice_purchases_2016)
@@ -512,6 +507,7 @@ def main():
         df_sales_final_2016_cleaned)
     df_sales_final_2016_by_store_by_classification_by_description_by_month.to_csv(
         "Output\\sales_final_2016_by_store_by_classification_by_description_by_month.csv")
+
 
     df_2016_beg_inv_by_store_asValue = prep_2016_beg_inv_by_store_value(df_beg_inv_final_2016_cleaned)
     df_2016_beg_inv_by_store_asValue.to_csv("Output\\final_2016_beg_inventory_by_store_asValue.csv")
