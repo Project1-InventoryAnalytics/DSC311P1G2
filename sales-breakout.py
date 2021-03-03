@@ -128,6 +128,9 @@ def clean_end_inv_final_2016(df):
     # address missing values
     df_missing = df[df.isna().any(axis=1)]
     df_missing.to_csv("Output\\Missing_Values_EndInvFINAL12312016.csv")
+    # reviewing missing values, all missing are in city column for store 46 Tywardreath
+    df_cleaned = df.copy(deep=True)
+    df_cleaned.fillna("TYWARDREATH", inplace=True)
     '''
     # check for outliers using histogram for onHand, Price
     plt.hist(df["onHand"], bins=100)
@@ -326,6 +329,54 @@ def prep_earnings_by_store_by_month(df_purchases, df_sales):
     return df_earnings
 
 
+def prep_sales_final_2016_by_store_by_classification_by_month(df):
+    # add columns for year and month
+    df_prepped = df.copy(deep=True)
+    df_prepped["Year"] = pd.DatetimeIndex(df_prepped["SalesDate"]).year
+    df_prepped["Month"] = pd.DatetimeIndex(df_prepped["SalesDate"]).month
+
+    # add column with store name parsed from InventoryId
+    df_prepped["Store_Name"] = df_prepped["InventoryId"].str.extract(r'_([^_]+)_', expand=True)
+
+    df_prepped_by_store_by_classification = df_prepped.groupby(["Store", "Store_Name", "Classification", "Year", "Month"]).agg(
+        Sales_Sum=pd.NamedAgg(column="SalesDollars", aggfunc="sum"),
+        Sales_Mean=pd.NamedAgg(column="SalesDollars", aggfunc="mean")).reset_index()
+
+    return df_prepped_by_store_by_classification
+
+
+def prep_sales_final_2016_by_store_by_classification_by_vendor_by_month(df):
+    # add columns for year and month
+    df_prepped = df.copy(deep=True)
+    df_prepped["Year"] = pd.DatetimeIndex(df_prepped["SalesDate"]).year
+    df_prepped["Month"] = pd.DatetimeIndex(df_prepped["SalesDate"]).month
+
+    # add column with store name parsed from InventoryId
+    df_prepped["Store_Name"] = df_prepped["InventoryId"].str.extract(r'_([^_]+)_', expand=True)
+
+    df_prepped_by_store_by_classification_by_vendor = df_prepped.groupby(["Store", "Store_Name", "Classification", "VendorName", "Year", "Month"]).agg(
+        Sales_Sum=pd.NamedAgg(column="SalesDollars", aggfunc="sum"),
+        Sales_Mean=pd.NamedAgg(column="SalesDollars", aggfunc="mean")).reset_index()
+
+    return df_prepped_by_store_by_classification_by_vendor
+
+
+def prep_sales_final_2016_by_store_by_classification_by_description_by_month(df):
+    # add columns for year and month
+    df_prepped = df.copy(deep=True)
+    df_prepped["Year"] = pd.DatetimeIndex(df_prepped["SalesDate"]).year
+    df_prepped["Month"] = pd.DatetimeIndex(df_prepped["SalesDate"]).month
+
+    # add column with store name parsed from InventoryId
+    df_prepped["Store_Name"] = df_prepped["InventoryId"].str.extract(r'_([^_]+)_', expand=True)
+
+    df_prepped_by_store_by_classification_by_description = df_prepped.groupby(["Store", "Store_Name", "Description", "VendorName", "Year", "Month"]).agg(
+        Sales_Sum=pd.NamedAgg(column="SalesDollars", aggfunc="sum"),
+        Sales_Mean=pd.NamedAgg(column="SalesDollars", aggfunc="mean")).reset_index()
+
+    return df_prepped_by_store_by_classification_by_description
+
+
 def main():
     # load data
     df_2017_purchase_prices = pd.read_csv("Datasets\\2017PurchasePricesDec.csv")
@@ -371,6 +422,21 @@ def main():
     df_earnings_by_store_by_month = prep_earnings_by_store_by_month(df_purchases_final_2016_by_store_by_month,
                                                                     df_sales_final_2016_by_store_by_month)
     df_earnings_by_store_by_month.to_csv("Output\\earnings_by_store_by_month.csv")
+
+    df_sales_final_2016_by_store_by_classification_by_month = prep_sales_final_2016_by_store_by_classification_by_month(
+        df_sales_final_2016_cleaned)
+    df_sales_final_2016_by_store_by_classification_by_month.to_csv(
+        "Output\\sales_final_2016_by_store_by_classification_by_month.csv")
+
+    df_sales_final_2016_by_store_by_classification_by_vendor_by_month = prep_sales_final_2016_by_store_by_classification_by_vendor_by_month(
+        df_sales_final_2016_cleaned)
+    df_sales_final_2016_by_store_by_classification_by_vendor_by_month.to_csv(
+        "Output\\sales_final_2016_by_store_by_classification_by_vendor_by_month.csv")
+
+    df_sales_final_2016_by_store_by_classification_by_description_by_month = prep_sales_final_2016_by_store_by_classification_by_description_by_month(
+        df_sales_final_2016_cleaned)
+    df_sales_final_2016_by_store_by_classification_by_description_by_month.to_csv(
+        "Output\\sales_final_2016_by_store_by_classification_by_description_by_month.csv")
 
 
 if __name__ == '__main__':
