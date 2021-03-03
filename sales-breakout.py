@@ -389,6 +389,7 @@ def prep_sales_final_2016_by_store_by_classification_by_description_by_month(df)
 
     return df_prepped_by_store_by_classification_by_description
 
+
 def prep_2016_beg_inv_by_store_value(df):
     df_prepped = df.copy(deep=True)
 
