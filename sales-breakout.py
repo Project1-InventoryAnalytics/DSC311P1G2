@@ -115,8 +115,16 @@ def clean_beg_inv_final_2016(df):
 
     # review/address outliers - onHand, Price
     df_outliers = df[(df["onHand"] > (df["onHand"].mean() + (2 * df["onHand"].std()))) |
-                             (df["Price"] > (df["Price"].mean() + (2 * df["Price"].std())))]
+                     (df["Price"] > (df["Price"].mean() + (2 * df["Price"].std())))]
     df_outliers.to_csv("Output\\Outliers_BegInvFINAL12312016.csv")
+
+    # Data Shape: (206529, 9)
+    # Based on check in investigate_data(df), mo missing values
+    # ['InventoryId', 'Store', 'City', 'Brand', 'Description', 'Size', 'onHand', 'Price', 'startDate']
+
+    # drop column 'InventoryId' is highly correlated
+    # all information from this column is represented in the columns 'Store', 'City', 'Brand'
+    df.drop(axis=1, columns='InventoryId', inplace=True)
 
     return df
 
