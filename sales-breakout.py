@@ -1,15 +1,16 @@
-#import relevant modules
+# import relevant modules
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sb
 from sklearn import preprocessing as pp
 from sklearn.preprocessing import LabelEncoder
+
 le = LabelEncoder()
 
 desired_width = 600
-pd.set_option('display.width',desired_width)
-pd.set_option('display.max_columns',20)
+pd.set_option('display.width', desired_width)
+pd.set_option('display.max_columns', 20)
 pd.set_option('display.max_rows', 300)
 
 '''
@@ -61,6 +62,7 @@ def investigate_data(df):
     print()
     '''
 
+
 def clean_2017_purchase_prices(df):
     # investigate dataset
     investigate_data(df)
@@ -91,7 +93,8 @@ def clean_2017_purchase_prices(df):
 
     # address outliers
     df_outliers = df_cleaned[(df_cleaned["Price"] > (df_cleaned["Price"].mean() + (2 * df_cleaned["Price"].std()))) |
-        (df_cleaned["PurchasePrice"] > (df_cleaned["PurchasePrice"].mean() + (2 * df_cleaned["PurchasePrice"].std())))]
+                             (df_cleaned["PurchasePrice"] > (
+                                         df_cleaned["PurchasePrice"].mean() + (2 * df_cleaned["PurchasePrice"].std())))]
     df_outliers.to_csv("Output\\Outliers_2017PurchasePricesDec.csv")
     # based on reviewing this list the data seems plausible, so outliers to remain
 
@@ -155,8 +158,8 @@ def clean_invoice_purchases_2016(df):
     '''
     # address outliers
     df_outliers = df[(df["Dollars"] > (df["Dollars"].mean() + (2 * df["Dollars"].std()))) |
-        (df["Freight"] > (df["Freight"].mean() + (2 * df["Freight"].std()))) |
-        (df["Quantity"] > (df["Quantity"].mean() + (2 * df["Quantity"].std())))]
+                     (df["Freight"] > (df["Freight"].mean() + (2 * df["Freight"].std()))) |
+                     (df["Quantity"] > (df["Quantity"].mean() + (2 * df["Quantity"].std())))]
     df_outliers.to_csv("Output\\Outliers_InvoicePurchases12312016.csv")
     # based on reviewing this list the data seems plausible, so outliers to remain
 
@@ -265,16 +268,15 @@ def prep_invoice_purchases_2016_by_month(df):
 def prep_purchases_final_2016_by_store_by_month(df):
     # add columns for year and month
     df_prepped = df.copy(deep=True)
-    df_prepped["Purchase_Paid_Year"] = pd.DatetimeIndex(df_prepped["PayDate"]).year
-    df_prepped["Purchase_Paid_Month"] = pd.DatetimeIndex(df_prepped["PayDate"]).month
+    df_prepped["Year"] = pd.DatetimeIndex(df_prepped["PayDate"]).year
+    df_prepped["Month"] = pd.DatetimeIndex(df_prepped["PayDate"]).month
 
     # add column with store name parsed from InventoryId
     df_prepped["Store_Name"] = df_prepped["InventoryId"].str.extract(r'_([^_]+)_', expand=True)
 
-    df_prepped_by_store = df_prepped.groupby(["Store", "Store_Name", "Purchase_Paid_Year", "Purchase_Paid_Month"]).aggregate(
-        {"Dollars": ["sum", "mean"]})
-
-    #df_prepped_by_store.columns = ["Store", "Store_Name", "Purchase_Paid_Year", "Purchase_Paid_Month", "Dollars_Sum", "Dollars_Mean"]
+    df_prepped_by_store = df_prepped.groupby(["Store", "Store_Name", "Year", "Month"]).agg(
+        Purchase_Sum=pd.NamedAgg(column="Dollars", aggfunc="sum"),
+        Purchase_Mean=pd.NamedAgg(column="Dollars", aggfunc="mean")).reset_index()
 
     return df_prepped_by_store
 
@@ -282,55 +284,59 @@ def prep_purchases_final_2016_by_store_by_month(df):
 def prep_sales_final_2016_by_store_by_month(df):
     # add columns for year and month
     df_prepped = df.copy(deep=True)
-    df_prepped["Sales_Year"] = pd.DatetimeIndex(df_prepped["SalesDate"]).year
-    df_prepped["Sales_Month"] = pd.DatetimeIndex(df_prepped["SalesDate"]).month
+    df_prepped["Year"] = pd.DatetimeIndex(df_prepped["SalesDate"]).year
+    df_prepped["Month"] = pd.DatetimeIndex(df_prepped["SalesDate"]).month
 
     # add column with store name parsed from InventoryId
     df_prepped["Store_Name"] = df_prepped["InventoryId"].str.extract(r'_([^_]+)_', expand=True)
 
-    df_prepped_by_store = df_prepped.groupby(["Store", "Store_Name", "Sales_Year", "Sales_Month"]).aggregate(
-        {"SalesDollars": ["sum", "mean"]})
-
-    #df_prepped_by_store.columns = ["Store", "Store_Name", "Sales_Year", "Sales_Month", "SalesDollars_Sum", "SalesDollars_Mean"]
+    df_prepped_by_store = df_prepped.groupby(["Store", "Store_Name", "Year", "Month"]).agg(
+        Sales_Sum=pd.NamedAgg(column="SalesDollars", aggfunc="sum"),
+        Sales_Mean=pd.NamedAgg(column="SalesDollars", aggfunc="mean")).reset_index()
 
     return df_prepped_by_store
 
 
 def prep_earnings_by_store_by_month(df_purchases, df_sales):
     # full join df_purchases and df_sales
-    print(df_purchases.head())
-    print(df_sales.head())
-    df_earnings = pd.merge(df_purchases, df_sales, how="outer", left_on=["Store", "Purchase_Paid_Year", "Purchase_Paid_Month"],
-                           right_on=["Store", "Sales_Year", "Sales_Month"])
+    df_earnings = pd.merge(df_purchases, df_sales, how="outer", left_on=["Store", "Store_Name", "Year", "Month"],
+                           right_on=["Store", "Store_Name", "Year", "Month"])
 
-    print(df_earnings.head(20))
+    # address blank cells where there may not be any purchases or sales by replacing with 0.0000001
+    # not using 0, because going to calculate ratios and do not want to divide by 0
+    df_earnings.fillna(0.0000001, inplace=True)
+
+    # add earnings and earnings/sales ratio
+    df_earnings["Earnings_Sum"] = (df_earnings["Sales_Sum"] - df_earnings["Purchase_Sum"])
+    df_earnings["Earnings_Mean"] = (df_earnings["Sales_Mean"] - df_earnings["Purchase_Mean"])
+    df_earnings["Earnings_Sales_Ratio_Sum"] = (df_earnings["Earnings_Sum"] / df_earnings["Sales_Sum"])
+    df_earnings["Earnings_Sales_Ratio_Mean"] = (df_earnings["Earnings_Mean"] / df_earnings["Sales_Mean"])
 
     return df_earnings
 
 
 def main():
-
     # load data
-    #df_2017_purchase_prices = pd.read_csv("Datasets\\2017PurchasePricesDec.csv")
-    #df_beg_inv_final_2016 = pd.read_csv("Datasets\\BegInvFINAL12312016.csv")
-    #df_end_inv_final_2016 = pd.read_csv("Datasets\\EndInvFINAL12312016.csv")
-    #df_invoice_purchases_2016 = pd.read_csv("Datasets\\InvoicePurchases12312016.csv")
+    # df_2017_purchase_prices = pd.read_csv("Datasets\\2017PurchasePricesDec.csv")
+    # df_beg_inv_final_2016 = pd.read_csv("Datasets\\BegInvFINAL12312016.csv")
+    # df_end_inv_final_2016 = pd.read_csv("Datasets\\EndInvFINAL12312016.csv")
+    # df_invoice_purchases_2016 = pd.read_csv("Datasets\\InvoicePurchases12312016.csv")
     df_purchases_final_2016 = pd.read_csv("Datasets\\PurchasesFINAL12312016.csv")
     df_sales_final_2016 = pd.read_csv("Datasets\\SalesFINAL12312016.csv")
 
     # investigate data and clean data
     print("Investigate and Clean 2017 Purchase Prices Dataset " + ("*" * 60))
-    #df_2017_purchase_prices_cleaned = clean_2017_purchase_prices(df_2017_purchase_prices)
-    
+    # df_2017_purchase_prices_cleaned = clean_2017_purchase_prices(df_2017_purchase_prices)
+
     print("Investigate and Clean Beginning Inventory Final 2016 Dataset " + ("*" * 60))
-    #df_beg_inv_final_2016_cleaned = clean_beg_inv_final_2016(df_beg_inv_final_2016)
+    # df_beg_inv_final_2016_cleaned = clean_beg_inv_final_2016(df_beg_inv_final_2016)
 
     print("Investigate and Clean Ending Inventory Final 2016 Dataset " + ("*" * 60))
-    #df_end_inv_final_2016_cleaned = clean_end_inv_final_2016(df_end_inv_final_2016)
-    
+    # df_end_inv_final_2016_cleaned = clean_end_inv_final_2016(df_end_inv_final_2016)
+
     print("Investigate and Clean Invoice Purchases 2016 Dataset " + ("*" * 60))
-    #df_invoice_purchases_2016_cleaned = clean_invoice_purchases_2016(df_invoice_purchases_2016)
-    
+    # df_invoice_purchases_2016_cleaned = clean_invoice_purchases_2016(df_invoice_purchases_2016)
+
     print("Investigate and Clean Purchases Final 2016 Dataset " + ("*" * 60))
     df_purchases_final_2016_cleaned = clean_purchases_final_2016(df_purchases_final_2016)
 
@@ -338,16 +344,20 @@ def main():
     df_sales_final_2016_cleaned = clean_sales_final_2016(df_sales_final_2016)
 
     # prep/transform data for analysis - create new dfs, add columns to existing dfs, ...
-    #df_2017_purchase_prices_with_profit = prep_2017_purchase_prices_with_profit(df_2017_purchase_prices_cleaned)
-    #df_invoice_purchases_2016_by_month = prep_invoice_purchases_2016_by_month(df_invoice_purchases_2016_cleaned)
-    df_purchases_final_2016_by_store_by_month = prep_purchases_final_2016_by_store_by_month(df_purchases_final_2016_cleaned)
+    # df_2017_purchase_prices_with_profit = prep_2017_purchase_prices_with_profit(df_2017_purchase_prices_cleaned)
+
+    # df_invoice_purchases_2016_by_month = prep_invoice_purchases_2016_by_month(df_invoice_purchases_2016_cleaned)
+
+    df_purchases_final_2016_by_store_by_month = prep_purchases_final_2016_by_store_by_month(
+        df_purchases_final_2016_cleaned)
     df_purchases_final_2016_by_store_by_month.to_csv("Output\\purchases_final_2016_by_store_by_month.csv")
+
     df_sales_final_2016_by_store_by_month = prep_sales_final_2016_by_store_by_month(df_sales_final_2016_cleaned)
     df_sales_final_2016_by_store_by_month.to_csv("Output\\sales_final_2016_by_store_by_month.csv")
-    #df_earnings_by_store_by_month = prep_earnings_by_store_by_month(df_purchases_final_2016_by_store_by_month,
-                                                                    df_sales_final_2016_by_store_by_month)
-    #df_earnings_by_store_by_month.to_csv("Output\\earnings_by_store_by_month.csv")
 
+    df_earnings_by_store_by_month = prep_earnings_by_store_by_month(df_purchases_final_2016_by_store_by_month,
+                                                                    df_sales_final_2016_by_store_by_month)
+    df_earnings_by_store_by_month.to_csv("Output\\earnings_by_store_by_month.csv")
 
 
 if __name__ == '__main__':
