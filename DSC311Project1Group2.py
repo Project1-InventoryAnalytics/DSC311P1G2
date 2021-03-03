@@ -2,7 +2,7 @@
 DSC 311 Project 1
 Group 2:
 Jessica Lester
-Procter Mercer
+Proctor Mercer
 Tami Farber
 
 Stage one of Spring 2021 DSC 311 project
