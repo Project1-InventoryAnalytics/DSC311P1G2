@@ -156,10 +156,12 @@ def clean_end_inv_final_2016(df):
     print()
     print('\n\nEnding Inventory:\nThe total onHand count of the instances with missing values is {:,}'.format(
         df_missing['onHand'].sum()))
+
     # The total onHand count of the instances with missing values is 0
     # despite the lack of inventory for these instances, removed rows NaN in 'City'
     df_cleaned = df.copy(deep=True)
     df_cleaned.fillna("TYWARDREATH", inplace=True)
+    print("Replaced NaN with city name of store 46 for continuity with beginning inventory.")
 
 
 
@@ -399,8 +401,8 @@ def prep_2016_beg_inv_by_store_value(df):
     # groupby 'Store' and 'City' to calculate totals by store
     byStore = createStoreList(df_prepped)
 
-    print('\n\nThe value of the total inventory at the start of 2016 is {:,}'.format(df_prepped['InvValue'].sum()))
-    print('Value of inventory by store:\n')
+    # for future use
+    # print('\n\nThe value of the total inventory at the start of 2016 is {:,}'.format(df_prepped['InvValue'].sum()))
     inventoryB_valueByStore_subtotals = byStore['InvValue'].sum()
 
     return inventoryB_valueByStore_subtotals
@@ -411,8 +413,8 @@ def prep_2016_beg_inv_by_store_count(df):
     # groupby 'Store' and 'City' to calculate totals by store
     byStore = createStoreList(df_prepped)
 
-    print('\n\nThe count of the total inventory at the start of 2016 is {:,}'.format(df_prepped['onHand'].sum()))
-    print('Inventory count by store:\n')
+    # for future use
+    # print('\n\nThe count of the total inventory at the start of 2016 is {:,}'.format(df_prepped['onHand'].sum()))
     inventoryB_countByStore_subtotals = byStore['onHand'].sum()
 
     return inventoryB_countByStore_subtotals
@@ -426,8 +428,8 @@ def prep_2016_end_inv_by_store_value(df):
     # groupby 'Store' and 'City' to calculate totals by store
     byStore = createStoreList(df_prepped)
 
-    print('\n\nThe value of the total inventory at the end of 2016 is {:,}'.format(df_prepped['InvValue'].sum()))
-    print('Value of inventory by store:\n')
+    # for future use
+    # print('\n\nThe value of the total inventory at the end of 2016 is {:,}'.format(df_prepped['InvValue'].sum()))
     inventoryE_valueByStore_subtotals = byStore['InvValue'].sum()
 
     return inventoryE_valueByStore_subtotals
@@ -438,8 +440,8 @@ def prep_2016_end_inv_by_store_count(df):
     # groupby 'Store' and 'City' to calculate totals by store
     byStore = createStoreList(df_prepped)
 
-    print('\n\nThe count of the total inventory at the end of 2016 is {:,}'.format(df_prepped['onHand'].sum()))
-    print('Inventory count by store:\n')
+    # for future use
+    # print('\n\nThe count of the total inventory at the end of 2016 is {:,}'.format(df_prepped['onHand'].sum()))
     inventoryE_countByStore_subtotals = byStore['onHand'].sum()
 
     return inventoryE_countByStore_subtotals
