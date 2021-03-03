@@ -84,7 +84,7 @@ def createStoreList(df):
     # function is used by inventory methods
     # to create a uniform list of stores included
     storeList = df.groupby(by=['Store', 'City'], as_index=False, sort=True)
-    print(storeList)
+    #print(storeList)
 
     return storeList
 
